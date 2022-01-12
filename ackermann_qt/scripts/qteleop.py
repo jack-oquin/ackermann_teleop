@@ -28,7 +28,7 @@ from ackermann_msgs.msg import AckermannDriveStamped
 from dynamic_reconfigure.server import Server as ReconfigureServer
 import ackermann_qt.cfg.QTeleopConfig as Config
 
-g_topic = rospy.Publisher('ackermann_cmd', AckermannDriveStamped)
+g_topic = rospy.Publisher('ackermann_cmd', AckermannDriveStamped, queue_size=3)
 rospy.init_node('qteleop')
 
 # set path name for resolving icons
@@ -177,11 +177,16 @@ class MainWindow(QtGui.QMainWindow):
         self.drive.speed += v
         self.drive.steering_angle += a
 
+        if self.drive.speed >= self.config.limit_forward:
+            self.drive.speed = self.config.limit_forward
+        elif self.drive.speed <= -self.config.limit_reverse:
+            self.drive.speed = -self.config.limit_reverse
+
         # impose limits on commanded angle
         if self.drive.steering_angle > self.config.max_steering:
             self.drive.steering_angle = self.config.max_steering
-        if self.drive.steering_angle < self.config.min_steering:
-            self.drive.steering_angle = self.config.min_steering
+        if self.drive.steering_angle < -self.config.max_steering:
+            self.drive.steering_angle = -self.config.max_steering
 
         # clean up angle if it is very close to zero
         if math.fabs(self.drive.steering_angle) < self.config.epsilon_steering:
@@ -199,35 +204,35 @@ class MainWindow(QtGui.QMainWindow):
 
     def go_left(self):
         "steer left"
-        self.adjustCarCmd(0.0, math.radians(1.0))
+        self.adjustCarCmd(0.0, math.radians(0.5))
 
     def go_left_more(self):
         "steer more to left"
-        self.adjustCarCmd(0.0, math.radians(4.0))
+        self.adjustCarCmd(0.0, math.radians(1.0))
 
     def go_left_less(self):
         "steer a little to left"
-        self.adjustCarCmd(0.0, math.radians(0.25))
+        self.adjustCarCmd(0.0, math.radians(0.10))
 
     def go_right(self):
         "steer right"
-        self.adjustCarCmd(0.0, math.radians(-1.0))
+        self.adjustCarCmd(0.0, math.radians(-0.5))
 
     def go_right_more(self):
         "steer more to right"
-        self.adjustCarCmd(0.0, math.radians(-4.0))
+        self.adjustCarCmd(0.0, math.radians(-1.0))
 
     def go_right_less(self):
         "steer far to right"
-        self.adjustCarCmd(0.0, math.radians(-0.25))
+        self.adjustCarCmd(0.0, math.radians(-0.10))
 
     def slow_down(self):
         "go one m/s slower"
-        self.adjustCarCmd(-1.0, 0.0)    # one m/s slower
+        self.adjustCarCmd(-0.1, 0.0)    # one m/s slower
 
     def speed_up(self):
         "go one m/s faster"
-        self.adjustCarCmd(1.0, 0.0)     # one m/s faster
+        self.adjustCarCmd(0.1, 0.0)     # one m/s faster
 
     def stop_car(self):
         "stop car immediately"
@@ -238,6 +243,7 @@ class MainWindow(QtGui.QMainWindow):
         rospy.logdebug('Reconfigure callback, level ' + str(level))
         rospy.logdebug('New config ' + str(config))
         self.config = config
+        print(self.config)
         return config
 
 

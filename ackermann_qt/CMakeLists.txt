@@ -1,9 +1,24 @@
-cmake_minimum_required(VERSION 2.4.6)
-include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
+cmake_minimum_required(VERSION 3.0.2)
+project(ackermann_qt)
 
-rosbuild_init()
+find_package(catkin REQUIRED COMPONENTS
+  ackermann_msgs
+  dynamic_reconfigure
+  rospy
+)
 
-# auto-generated dynamic reconfiguration GUI
-rosbuild_find_ros_package(dynamic_reconfigure)
-include(${dynamic_reconfigure_PACKAGE_PATH}/cmake/cfgbuild.cmake)
-gencfg()
+generate_dynamic_reconfigure_options(
+  cfg/QTeleop.cfg
+)
+
+catkin_package(
+#  INCLUDE_DIRS include
+#  LIBRARIES ackermann_qt
+#  CATKIN_DEPENDS ackermann_msgs dynamic_reconfigure rospy
+#  DEPENDS system_lib
+)
+
+include_directories(
+# include
+  ${catkin_INCLUDE_DIRS}
+)
