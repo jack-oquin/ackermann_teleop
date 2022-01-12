@@ -2,7 +2,7 @@
 <package format="2">
   <name>ackermann_qt</name>
   <version>0.0.0</version>
-  <description brief="Ackermann steering Qt tele-operation">
+  <description>
   
      Qt tele-operation interface for driving a vehicle with Ackermann
      steering under human control.The ackermann_qt package
@@ -12,9 +12,8 @@
 
   <author>Jack O'Quin</author>
   <license>BSD</license>
-  <review status="experimental" notes=""/>
   <url>http://www.ros.org/wiki/ackermann_qt</url>
-
+  <maintainer email="k9632441@gmail.com">Jaehun Kim</maintainer>
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>ackermann_msgs</build_depend>
   <build_depend>dynamic_reconfigure</build_depend>
