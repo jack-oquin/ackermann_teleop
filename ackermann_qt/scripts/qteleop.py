@@ -243,7 +243,7 @@ class MainWindow(QtGui.QMainWindow):
         rospy.logdebug('Reconfigure callback, level ' + str(level))
         rospy.logdebug('New config ' + str(config))
         self.config = config
-        print(self.config)
+        # print(self.config)
         return config
 
 
